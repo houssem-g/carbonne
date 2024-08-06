@@ -1,0 +1,36 @@
+name: Check Darker
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  check-darker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install darker
+
+    - name: Run Darker
+      id: darker-check
+      run: |
+        darker . --check
+        if [ $? -ne 0 ]; then
+          echo "::error::Please execute darker first to format the code correctly."
+          exit 1
+        fi
